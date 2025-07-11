@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: dollz
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: deepdollz
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://dollz:secret@db:5432/deepdollz
+    depends_on:
+      - db
+
+  generator:
+    build: ./generator
+    depends_on:
+      - api
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
